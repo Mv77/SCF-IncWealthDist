@@ -1,7 +1,4 @@
 library(tidyverse)
-library(ggplot2)
-library(kableExtra)
-library(ggthemes)
 library(srvyr)
 library(haven)
 library(forcats)
@@ -76,13 +73,26 @@ SCF <- SCF %>% group_by(YEAR, Educ, Age_grp) %>%
 
 # Summary statistics ----
 
-# Create survey object
-scf_srvy <- as_survey_design(SCF, weights = 'WEIGHT')
+# Create survey object, and group it.
+scf_srvy_grp <- as_survey_design(SCF, weights = 'WEIGHT') %>%
+  group_by(Educ, YEAR, Age_grp)
 
-sumstats <- scf_srvy %>% group_by(Educ, YEAR, Age_grp) %>%
+# Compute stats
+sumstats <- scf_srvy_grp %>%
   srvyr::summarise_at(
     c("lnNrmWealth","lnPermIncome"),
     list('mean' = function(x) survey_mean(x, na.rm = TRUE),
          "sd" = function(x) survey_sd(x, na.rm = TRUE))
   ) %>%
   select(-contains("_se"))
+
+# Find number of observations used for stats
+nobs <- scf_srvy_grp %>%
+  srvyr::summarise(
+    w.obs = survey_total(),
+    obs   = unweighted(n())
+  ) %>%
+  select(-contains("_se"))
+
+# add to stats
+sumstats <- sumstats %>% left_join(nobs)
