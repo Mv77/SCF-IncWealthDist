@@ -64,35 +64,45 @@ SCF <- SCF %>% filter(Wealth > 0,
                       PermIncome > 0) %>%
   drop_na(YEAR, Educ, Age_grp)
 
-# We will need (year, educ, age) bins to have at least
-# two observations, to compute standard deviations. Drop those
-# in bins with less observations.
-SCF <- SCF %>% group_by(YEAR, Educ, Age_grp) %>%
-  mutate(n_bin = n()) %>%
-  filter(n_bin > 1)
-
 # Summary statistics ----
 
 # Create survey object, and group it.
-scf_srvy_grp <- as_survey_design(SCF, weights = 'WEIGHT') %>%
-  group_by(Educ, YEAR, Age_grp)
+scf_srvy <- as_survey_design(SCF, weights = 'WEIGHT')
 
-# Compute stats
-sumstats <- scf_srvy_grp %>%
-  srvyr::summarise_at(
-    c("lnNrmWealth","lnPermIncome"),
-    list('mean' = function(x) survey_mean(x, na.rm = TRUE),
-         "sd" = function(x) survey_sd(x, na.rm = TRUE))
-  ) %>%
-  select(-contains("_se"))
+# Define groupings
+groupings <- list(c("Educ", "YEAR", "Age_grp"),
+                  c("YEAR", "Age_grp"),
+                  c("Educ", "Age_grp"),
+                  c("Educ", "YEAR"),
+                  c("Educ"), c("YEAR"), c("Age_grp"))
 
-# Find number of observations used for stats
-nobs <- scf_srvy_grp %>%
-  srvyr::summarise(
-    w.obs = survey_total(),
-    obs   = unweighted(n())
-  ) %>%
-  select(-contains("_se"))
+# An auxiliary function that finds the quantities of
+# interest at any grouping
+calcSumStats <- function(survey, grouping){
+  
+  # Find number of observations used for stats
+  sumstats <- survey %>% group_by_at(grouping) %>%
+    srvyr::summarise(
+      
+      # Weighted and unweighted number of observations.
+      w.obs = survey_total(),
+      obs   = unweighted(n()),
+      
+      # Mean and sd of log(Wealth/Permanent income)
+      lnNrmWealth.mean = survey_mean(lnNrmWealth),
+      lnNrmWealth.sd   = survey_sd(lnNrmWealth),
+      
+      # Mean and sd of log(Permanent income)
+      lnPermIncome.mean = survey_mean(lnPermIncome),
+      lnPermIncome.sd   = survey_sd(lnPermIncome)
+      
+    ) %>%
+    select(-contains("_se")) 
+  
+  return(sumstats)
+  
+}
 
-# add to stats
-sumstats <- sumstats %>% left_join(nobs)
+# Apply to all groupings and combine into single table.
+table <- lapply(groupings, function(grp) calcSumStats(scf_srvy, grp)) %>%
+  bind_rows()
