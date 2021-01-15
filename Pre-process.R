@@ -45,7 +45,7 @@ SCF <- SCF %>%
   
   # Collapsed classification
   mutate(Educ = fct_collapse(edcl,
-                             "No HS"   = c("no high school diploma/GED"),
+                             "NoHS"   = c("no high school diploma/GED"),
                              "HS"      = c("high school diploma or GED",
                                            "some college"),
                              "College" = c("college degree")))

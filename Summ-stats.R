@@ -44,6 +44,14 @@ calcSumStats <- function(survey, grouping){
 table <- lapply(groupings, function(grp) calcSumStats(scf_srvy, grp)) %>%
   bind_rows()
 
+# Change type of grouping columns before exporting
+table <- table %>% ungroup() %>%
+  mutate(across(all_of(c('Educ','YEAR','Age_grp')), as.character))
+
+# Change NA's in grouping variables to 'All'
+table <- table %>%
+  replace_na(list(Educ = 'All', YEAR = 'All', Age_grp = 'All'))
+
 # Export result
 write_csv(table,
           file.path(scripts_dir,'WealthIncomeStats.csv'))
