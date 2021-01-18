@@ -17,10 +17,10 @@ wealth_var   <- 'networth'
 # Read
 SCF <- read_dta(file.path(scf_dir,'SCF_FULL.dta')) %>%
   
-  # Assign incomes and wealth
-  mutate(Income     = .data[[inc_var]],
-         PermIncome = .data[[perm_inc_var]],
-         Wealth     = .data[[wealth_var]])
+  # Assign incomes and wealth, all in thousands
+  mutate(Income     = .data[[inc_var]] * 1e-3,
+         PermIncome = .data[[perm_inc_var]] * 1e-3,
+         Wealth     = .data[[wealth_var]] * 1e-3)
 
 # Create normalized wealth and log variables
 SCF <- SCF %>%
