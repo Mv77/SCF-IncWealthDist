@@ -1,3 +1,6 @@
+# Stata files (raw SCF)
+*.dta
+
 # History files
 .Rhistory
 .Rapp.history
