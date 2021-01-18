@@ -53,7 +53,7 @@ SCF <- SCF %>%
 
 # Discretize age into bins.
 SCF <- SCF %>%
-  mutate(Age_grp = cut(age, breaks = seq(15,100,5)))
+  mutate(Age_grp = cut(age, breaks = seq(15,95,5)))
 
 # Sample restrictions ----
 

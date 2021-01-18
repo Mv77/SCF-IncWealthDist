@@ -36,7 +36,13 @@ calcSumStats <- function(survey, grouping){
     ) %>%
     select(-contains("_se")) 
   
-  return(sumstats)
+  # Find all combinations of factors to construct explicit NAs
+  combs <- sumstats %>% ungroup() %>% select(all_of(grouping)) %>%
+    expand(!!!rlang::syms(grouping))
+  
+  stats <- combs %>% left_join(sumstats)
+  
+  return(stats)
   
 }
 
