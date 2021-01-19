@@ -4,7 +4,7 @@ library(forcats)
 
 # Control panel ----
 
-scf_dir <- "E:/Data/SCF/Processed"
+scf_dir <- "./scf_summ_files"
 
 # Define the SCF variables that will be used as
 # income, permanent income, and wealth.
@@ -14,17 +14,38 @@ wealth_var   <- 'networth'
 
 # Load and pre-process SCF ----
 
-# Read
-SCF <- read_dta(file.path(scf_dir,'SCF_FULL.dta')) %>%
+# Find all the files
+files <- grep("rscfp[0-9]+\\.dta",
+              list.files(path = scf_dir), value = TRUE)
+
+# And years (summary files don't have them as variables)
+years <- as.numeric(gsub("rscfp|\\.dta","", files))
+
+# Create a function that receives a year, reads the file
+# and creates a variable indicating the year
+read_and_label <- function(yr){
   
+  filename <- file.path(scf_dir,paste("rscfp",yr,'.dta', sep = ''))
+  data <- read_dta(file = filename) %>%
+    mutate(YEAR = yr)
+  
+  return(data)
+  
+}
+
+# Read all years' summary files and paste them
+SCF <- lapply(years, read_and_label) %>% bind_rows()
+
+
+# Create income and wealth variables as indicated
+SCF <- SCF %>%
+
   # Assign incomes and wealth, all in thousands
   mutate(Income     = .data[[inc_var]] * 1e-3,
          PermIncome = .data[[perm_inc_var]] * 1e-3,
-         Wealth     = .data[[wealth_var]] * 1e-3)
-
-# Create normalized wealth and log variables
-SCF <- SCF %>%
+         Wealth     = .data[[wealth_var]] * 1e-3) %>%
   
+  # Create normalized wealth and log variables
   mutate(NrmWealth    = Wealth/PermIncome,
          lnNrmWealth  = log(NrmWealth),
          lnPermIncome = log(PermIncome))
@@ -45,7 +66,7 @@ SCF <- SCF %>%
   
   # Collapsed classification
   mutate(Educ = fct_collapse(edcl,
-                             "NoHS"   = c("no high school diploma/GED"),
+                             "NoHS"    = c("no high school diploma/GED"),
                              "HS"      = c("high school diploma or GED",
                                            "some college"),
                              "College" = c("college degree")))
@@ -63,4 +84,11 @@ SCF <- SCF %>% filter(Wealth > 0,
                       PermIncome > 0) %>%
   drop_na(YEAR, Educ, Age_grp)
 
+
+# Keep only the variables that will be used
+SCF <- SCF %>%
+  select(wgt, YEAR, Educ, Age_grp,
+         lnNrmWealth, lnPermIncome)
+
+# Delete all the intermediate objects
 rm(list = setdiff(ls(), c('SCF','scripts_dir')))

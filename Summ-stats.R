@@ -4,7 +4,7 @@ library(srvyr)
 # Summary statistics ----
 
 # Create survey object, and group it.
-scf_srvy <- as_survey_design(SCF, weights = 'WEIGHT')
+scf_srvy <- as_survey_design(SCF, weights = 'wgt')
 
 # Define groupings
 groupings <- list(c("Educ", "YEAR", "Age_grp"),
@@ -59,5 +59,4 @@ table <- table %>%
   replace_na(list(Educ = 'All', YEAR = 'All', Age_grp = 'All'))
 
 # Export result
-write_csv(table,
-          file.path(scripts_dir,'WealthIncomeStats.csv'))
+write_csv(table, './WealthIncomeStats.csv')
