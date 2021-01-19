@@ -4,7 +4,7 @@ library(forcats)
 
 # Control panel ----
 
-scf_dir <- "./scf_summ_files"
+scf_dir <- "./data"
 
 # Define the SCF variables that will be used as
 # income, permanent income, and wealth.
