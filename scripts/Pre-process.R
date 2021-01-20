@@ -14,18 +14,17 @@ wealth_var   <- 'networth'
 
 # Load and pre-process SCF ----
 
-# Find all the files
-files <- grep("rscfp[0-9]+\\.dta",
-              list.files(path = scf_dir), value = TRUE)
+# Find all the directories to check what years are in
+dirs <- list.dirs(path = "./data/", full.names = FALSE, recursive = FALSE)
 
 # And years (summary files don't have them as variables)
-years <- as.numeric(gsub("rscfp|\\.dta","", files))
+years <- as.numeric(dirs)
 
 # Create a function that receives a year, reads the file
 # and creates a variable indicating the year
 read_and_label <- function(yr){
   
-  filename <- file.path(scf_dir,paste("rscfp",yr,'.dta', sep = ''))
+  filename <- file.path(scf_dir,yr,paste("rscfp",yr,'.dta', sep = ''))
   data <- read_dta(file = filename) %>%
     mutate(YEAR = yr)
   
