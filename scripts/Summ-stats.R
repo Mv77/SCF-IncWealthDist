@@ -58,5 +58,8 @@ table <- table %>% ungroup() %>%
 table <- table %>%
   replace_na(list(Educ = 'All', YEAR = 'All', Age_grp = 'All'))
 
+# Finally, add the base year for inflation adjustments
+table <- table %>% mutate(BASE_YR = base_year)
+
 # Export result
 write_csv(table, './WealthIncomeStats.csv')

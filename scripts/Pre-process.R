@@ -90,4 +90,4 @@ SCF <- SCF %>%
          lnNrmWealth, lnPermIncome)
 
 # Delete all the intermediate objects
-rm(list = setdiff(ls(), c('SCF','scripts_dir')))
+rm(list = setdiff(ls(), c('SCF','scripts_dir','base_year')))
