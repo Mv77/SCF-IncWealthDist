@@ -46,6 +46,7 @@ SCF <- SCF %>%
   
   # Create normalized wealth and log variables
   mutate(NrmWealth    = Wealth/PermIncome,
+         lnWealth     = log(Wealth),
          lnNrmWealth  = log(NrmWealth),
          lnPermIncome = log(PermIncome))
 
@@ -87,7 +88,7 @@ SCF <- SCF %>% filter(Wealth > 0,
 # Keep only the variables that will be used
 SCF <- SCF %>%
   select(wgt, YEAR, Educ, Age_grp,
-         lnNrmWealth, lnPermIncome)
+         lnWealth, lnNrmWealth, lnPermIncome)
 
 # Delete all the intermediate objects
 rm(list = setdiff(ls(), c('SCF','scripts_dir','base_year')))

@@ -25,6 +25,10 @@ calcSumStats <- function(survey, grouping){
       w.obs = survey_total(),
       obs   = unweighted(n()),
       
+      # Mean and sd of log(Wealth)
+      lnWealth.mean = survey_mean(lnWealth),
+      lnWealth.sd   = survey_sd(lnWealth),
+      
       # Mean and sd of log(Wealth/Permanent income)
       lnNrmWealth.mean = survey_mean(lnNrmWealth),
       lnNrmWealth.sd   = survey_sd(lnNrmWealth),
