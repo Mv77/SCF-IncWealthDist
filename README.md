@@ -38,3 +38,9 @@ This is the main file that contains the summary statistics that are the purpose 
     - `w.obs`: is the sum of survey weights of the observations that are used for computing the summary statistics in each row.
     - `BASE_YR`: indicates the base year used for expressing dollar quantities in the SCF summary files used for computing the summary statistics. The ratio of wealth to permanent
       income won't be affected by inflation adjustments, but permanent income and wealth (independently) will be.
+      
+  # Replicating the output table
+  
+  Running the script `./do_all.R` will download the necessary files from the SCF's webpages and calculate the summary statistics.
+  
+  Make sure to specify the base year in which nominal quantities are expressed in `./do_all.R`.
