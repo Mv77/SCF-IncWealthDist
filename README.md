@@ -2,6 +2,7 @@
 
 Micro and macroeconomic models dealing with the distribution of wealth and its accumulation often need to make assumptions about the initial distribution of wealth, ``permanent income'', or their ratio.
 This repository is meant to provide clear and replicable moments of these distributions that can be used by researchers in their calibrations.
+
 # Inputs
 
 This repository's summary statistics are calculated on the Survey of Consumer Finances' Summary Extract files. For replicability, it uses the Summary Files' readily computed
@@ -18,3 +19,9 @@ This is the main file that contains the summary statistics that are the purpose 
      extreme of brackets is not included, so `(20,25]` corresponds to ages `{21,22,23,24,25}`. `All` marks rows in which all age groups were used.
   - `YEAR`: survey wave of the SCF. It indicates which waves of the SCF were used in calculating the row's statistics. `All` marks rows in which all waves were pooled. **NOTE:**
      when combining multiple waves,  I do not re-weight observations: I continue to use the weight variable as if all observations came from the same wave.
+     
+ - Summary statistics:
+  - `lnPermIncome.mean` and `lnPermIncome.sd`: survey-weighted mean and standard deviation of the natural logarithm of "permanent income", as measured by the variable `norminc`
+    in the SCF's summary files. Note that this measure contains, among others, capital gains and pension-fund withdrawals and might therefore substantially differ from the
+    popular concept of the "permanent component" of labor income, especially at older ages
+    (see [the SCF's website for exact definitions](https://www.federalreserve.gov/econres/scfindex.htm)).
