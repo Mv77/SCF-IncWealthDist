@@ -11,7 +11,8 @@ groupings <- list(c("Educ", "YEAR", "Age_grp"),
                   c("YEAR", "Age_grp"),
                   c("Educ", "Age_grp"),
                   c("Educ", "YEAR"),
-                  c("Educ"), c("YEAR"), c("Age_grp"))
+                  c("Educ"), c("YEAR"), c("Age_grp"),
+                  c())
 
 # An auxiliary function that finds the quantities of
 # interest at any grouping
@@ -41,10 +42,16 @@ calcSumStats <- function(survey, grouping){
     select(-contains("_se")) 
   
   # Find all combinations of factors to construct explicit NAs
-  combs <- sumstats %>% ungroup() %>% select(all_of(grouping)) %>%
-    expand(!!!rlang::syms(grouping))
-  
-  stats <- combs %>% left_join(sumstats)
+  if (length(grouping) > 0){
+    
+    combs <- sumstats %>% ungroup() %>% select(all_of(grouping)) %>%
+      expand(!!!rlang::syms(grouping))
+    
+    stats <- combs %>% left_join(sumstats)
+    
+  } else {
+    stats <- sumstats
+  }
   
   return(stats)
   
