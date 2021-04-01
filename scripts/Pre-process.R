@@ -76,6 +76,16 @@ SCF <- SCF %>%
 SCF <- SCF %>%
   mutate(Age_grp = cut(age, breaks = seq(15,95,5)))
 
+# Export full normalized wealth dataset ----
+# (useful for bootstrapping)
+
+nrm_wealth <- SCF %>%
+  select(YEAR, age, Age_grp, Educ, Wealth, PermIncome, NrmWealth, wgt) %>%
+  setNames(c("wave","age","age_group","education",wealth_var,perm_inc_var,"wealth_income_ratio","weight")) %>%
+  mutate(monetary_year = base_year)
+
+write_csv(nrm_wealth, './wealth_income_ratio_full.csv')
+
 # Sample restrictions ----
 
 # Only keep those with positive wealth and positive permanent income,
@@ -92,3 +102,23 @@ SCF <- SCF %>%
 
 # Delete all the intermediate objects
 rm(list = setdiff(ls(), c('SCF','scripts_dir','base_year')))
+
+library(ggplot2)
+library(ggthemes)
+p <- ggplot(SCF %>%
+              filter(Age_grp %in% c("(20,25]","(25,30]",
+                                    "(30,35]","(35,40]")),
+            aes(x = lnPermIncome, y = lnNrmWealth)) +
+  geom_density_2d() +
+  facet_grid(Age_grp ~ Educ) +
+  theme_bw()
+print(p)
+
+p <- ggplot(SCF %>% filter(YEAR == 1995) %>%
+              filter(Age_grp %in% c("(20,25]","(25,30]",
+                                    "(30,35]","(35,40]")),
+            aes(x = lnNrmWealth, weight = wgt)) +
+  geom_density() +
+  facet_grid(Age_grp ~ Educ) +
+  theme_bw()
+print(p)
